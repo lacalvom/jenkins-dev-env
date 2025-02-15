@@ -33,8 +33,6 @@ Si ambos comandos devuelven un número de versión, puedes continuar.
 
 ```
 jenkins-dev-env/
-│── jenkins-container.tar.gz    # imagen del contenedor de jenkins para importar
-│── java-container.tar.gz       # imagen del contenedor de java para importar
 │── jenkins-container/
 │   │── Dockerfile
 │   │── scripts/
