@@ -107,7 +107,7 @@ docker compose build --no-cache
 ## 🔹 **5. Acceder a Jenkins**
 Una vez que el entorno esté en ejecución, accede a Jenkins en **http://localhost:8080**
 
-La contraseña del usuario administrador preconfirado `jenkins`, es: `P4ssw0rd`
+La contraseña del usuario administrador preconfigurado `jenkins`, es: `P4ssw0rd`
 
 ---
 
