@@ -1,6 +1,6 @@
 # 📦 Jenkins Dev Environment
 
-Este entorno proporciona un contenedor con Jenkins **2.332.2** preconfigurado con plugins y otro contenedor de desarrollo con **Java y Groovy**. 
+Entorno de desarrollo con un contenedor Jenkins **2.332.2** preconfigurado con plugins y otro contenedor de **Java y Groovy**. 
 
 Incluye:
 - Un **contenedor Jenkins** con los plugins necesarios.
