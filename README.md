@@ -51,6 +51,14 @@ jenkins-dev-env/
 
 ## 🔹 **3. Instalación del Entorno**
 
+### 📦 **Descarga de Archivos Grandes**
+
+Para evitar limitaciones de GitHub, los archivos grandes deben descargarse manualmente desde Google Drive.
+
+### 📌 **Descarga los Archivos Necesarios:**
+- 🔗 [Jenkins Container](https://drive.google.com/uc?export=download&id=1gL-4kWeMF-v6sW-6rvbBjmFx1ZeAz2JN)
+- 🔗 [Java Container](https://drive.google.com/uc?export=download&id=1AH4bwPAlgReyytN1wJ0bF6HpSAg-Nhcb)
+
 ### ✅ **Importar las Imágenes de Docker**
 Para evitar que cada desarrollador tenga que construir las imágenes manualmente, estas ya han sido exportadas y comprimidas. Para importarlas en Docker:
 
