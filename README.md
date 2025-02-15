@@ -125,7 +125,7 @@ El entorno está configurado para integrarse con **VS Code DevContainers**, lo q
 | **Los contenedores ya están corriendo** | ❌ No es necesario | VS Code solo se conectará al contenedor sin reiniciarlo. |
 | **Quieres asegurarte de que todo funciona antes de abrir VS Code** | ✅ Sí, puedes ejecutar `docker compose up -d` manualmente | Útil para verificar logs antes de abrir VS Code. |
 
-Para más información sobre DevContainers, consulta la documentación oficial de VS Code: [https://code.visualstudio.com/docs/devcontainers/containers](https://code.visualstudio.com/docs/devcontainers/containers)
+Para más información sobre DevContainers, consulta la documentación oficial de  [VS Code:](https://code.visualstudio.com/docs/devcontainers/containers)
 
 ---
 
