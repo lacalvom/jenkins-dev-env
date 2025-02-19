@@ -1,7 +1,14 @@
 FROM jenkins/jenkins:2.332.2-lts
 
 USER root
+# actualizar los origenes de software e instalar diversas herramientas
 RUN apt update && apt install -y git maven gradle unzip curl vim openjdk-11-jre
+
+# Instalar dependencias para RVM y Ruby
+RUN apt-get update && apt-get install -y gpg gcc make tar bzip2     && curl -sSL https://rvm.io/mpapis.asc | gpg --import -     && curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -     && curl -sSL https://get.rvm.io | bash -s stable     && /bin/bash -c "source /usr/local/rvm/scripts/rvm && rvm install 2.1.9 && rvm use 2.1.9 --default"
+
+# Verificar instalación de Ruby
+RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && ruby -v"
 
 # Crear carpeta de herramientas dentro del contenedor
 RUN mkdir -p /usr/share/jenkins/tools
