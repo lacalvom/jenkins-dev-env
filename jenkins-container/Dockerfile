@@ -1,36 +1,53 @@
-FROM jenkins/jenkins:2.332.2-lts
+FROM openjdk:8-jdk
 
+# usuario root
 USER root
-# actualizar los origenes de software e instalar diversas herramientas
-RUN apt update && apt install -y git maven gradle unzip curl vim openjdk-11-jre
 
-# Instalar dependencias para RVM y Ruby
-RUN apt-get update && apt-get install -y gpg gcc make tar bzip2     && curl -sSL https://rvm.io/mpapis.asc | gpg --import -     && curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -     && curl -sSL https://get.rvm.io | bash -s stable     && /bin/bash -c "source /usr/local/rvm/scripts/rvm && rvm install 2.1.9 && rvm use 2.1.9 --default"
+# Variables de entorno
+ENV JENKINS_VERSION=2.332.2
+ENV JENKINS_HOME=/var/jenkins_home
+ENV JENKINS_UC=https://updates.jenkins.io
 
-# Verificar instalación de Ruby
-RUN /bin/bash -c "source /usr/local/rvm/scripts/rvm && ruby -v"
+# Creo el usuario y el grupo 'jenkins'
+RUN groupadd -g 1000 jenkins \
+  && useradd -d "$JENKINS_HOME" -u 1000 -g 1000 -m -s /bin/bash jenkins
 
-# Crear carpeta de herramientas dentro del contenedor
+# Instalacion de utilidades (sudo, vim, etc.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl sudo vim tar git bzip2 maven gradle unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Agrego el usuario jenkins al grupo sudo (por si quieres usar sudo dentro del contenedor)
+RUN usermod -aG sudo jenkins
+
+# Descargo el WAR de Jenkins en /usr/share/jenkins/
+WORKDIR /usr/share/jenkins
+RUN curl -fsSL ${JENKINS_UC}/download/war/${JENKINS_VERSION}/jenkins.war -o jenkins.war
+
+# Copio automáticamente los plugins de una carpeta local "plugins"
+# que contiene todos los .hpi/.jpi.
+RUN mkdir -p $JENKINS_HOME/plugins
+COPY plugins/ $JENKINS_HOME/plugins/
+
+# Ajusto los permisos para el usuario jenkins
+RUN chown -R jenkins:jenkins /usr/share/jenkins ${JENKINS_HOME}
+
+# Copio jenkins-cli.jar y jenkins-plugin-cli.jar
 RUN mkdir -p /usr/share/jenkins/tools
-
-# Copiar jenkins-cli.jar y jenkins-plugin-cli.jar
 COPY tools/jenkins-cli.jar /usr/share/jenkins/tools/jenkins-cli.jar
 COPY tools/jenkins-plugin-cli.jar /usr/share/jenkins/tools/jenkins-plugin-cli.jar
+RUN chown -R jenkins:jenkins /usr/share/jenkins/tools/ && \
+    chmod +x /usr/share/jenkins/tools/*.jar
 
-# Copiar los scripts de configuración (usuario admin, correo, permisos, etc.)
-RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
-COPY scripts/setup_admin.groovy /usr/share/jenkins/ref/init.groovy.d/
-COPY scripts/email_config.groovy /usr/share/jenkins/ref/init.groovy.d/
-RUN chown -R jenkins:jenkins /usr/share/jenkins/ref/init.groovy.d
+## Copio los scripts de configuración
+RUN mkdir -p $JENKINS_HOME/init.groovy.d
+COPY scripts/setup_admin.groovy $JENKINS_HOME/init.groovy.d/
+COPY scripts/email_config.groovy $JENKINS_HOME/init.groovy.d/
+RUN chown -R jenkins:jenkins $JENKINS_HOME/init.groovy.d
 
-# Desactivar el asistente de configuración inicial
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
-
-# Copiar plugins predescargados para que Jenkins los instale en el primer arranque
-RUN mkdir -p /usr/share/jenkins/ref/plugins
-COPY plugins/ /usr/share/jenkins/ref/plugins/
-RUN chown -R jenkins:jenkins /usr/share/jenkins/ref/plugins
-
+# Cambiar a usuario jenkins
 USER jenkins
-# Ejecutar la instalación de plugins antes de arrancar Jenkins
-CMD ["/usr/local/bin/jenkins.sh"]
+
+# Arranco Jenkins con el .war
+CMD ["java", "-Djenkins.install.runSetupWizard=false", "-DJENKINS_HOME=/var/jenkins_home", "-jar", "/usr/share/jenkins/jenkins.war"]
+
