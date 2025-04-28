@@ -5,6 +5,8 @@ services:
     volumes:
       - ..:/workspace:cached
     command: /bin/sh -c 'while sleep 1000; do :; done'
+    networks:
+      - jenkins-net
 
   jenkins:
     build:
@@ -14,6 +16,94 @@ services:
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home"
+    networks:
+      - jenkins-net
+
+  jenkinsnew:
+    container_name: jenkinsnew-lts  
+    build:
+      context: ./jenkinsnew-container
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home"
+    restart: unless-stopped     
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - jenkins-net
+
+  artifactory:
+    build:
+      context: ./artifactory-container
+    container_name: artifactory
+    ports:
+      - "8082:8082"
+    environment:
+      - ARTIFACTORY_HOME=/var/opt/jfrog/artifactory
+    restart: unless-stopped
+    networks:
+      - jenkins-net
+
+  harbor:
+    build:
+      context: ./harbor-container
+    container_name: harbor
+    ports:
+      - "80:80"
+      - "443:443"
+      - "4443:4443"
+    restart: unless-stopped
+    networks:
+      - jenkins-net
+
+  gitea:
+    build:
+      context: ./gitea-container
+    container_name: gitea
+    ports:
+      - "3000:3000"  # Interfaz web
+      - "2222:22"    # SSH para clonar repositorios
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__server__ROOT_URL=http://localhost:3000/
+      - GITEA__server__SSH_PORT=2222
+    volumes:
+      - gitea_data:/data
+    restart: unless-stopped
+    networks:
+      - jenkins-net
+
+  sonarqube:
+    build:
+      context: ./sonarqube-container
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONARQUBE_JDBC_URL=jdbc:sqlite://opt/sonarqube/data/sonar.db
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    restart: unless-stopped
+    networks:
+      - jenkins-net
 
 volumes:
   jenkins_home: {}
+  gitea_data:  
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+
+networks:
+  jenkins-net:

@@ -14,7 +14,16 @@ RUN groupadd -g 1000 jenkins \
 
 # Instalacion de utilidades (sudo, vim, etc.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl sudo vim tar git bzip2 maven gradle unzip \
+    curl sudo vim tar git bzip2 maven gradle unzip openjdk-11-jdk \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Agregar repositorio bullseye-backports para OpenJDK 17
+RUN echo "deb http://deb.debian.org/debian bullseye-backports main" \
+    >> /etc/apt/sources.list.d/backports.list
+
+# Instalar OpenJDK 17 desde bullseye-backports
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    -t bullseye-backports openjdk-17-jdk \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Agrego el usuario jenkins al grupo sudo (por si quieres usar sudo dentro del contenedor)
@@ -45,9 +54,11 @@ COPY scripts/setup_admin.groovy $JENKINS_HOME/init.groovy.d/
 COPY scripts/email_config.groovy $JENKINS_HOME/init.groovy.d/
 RUN chown -R jenkins:jenkins $JENKINS_HOME/init.groovy.d
 
+# Copiar config.xml personalizado
+COPY config/config.xml ${JENKINS_HOME}
+
 # Cambiar a usuario jenkins
 USER jenkins
 
 # Arranco Jenkins con el .war
 CMD ["java", "-Djenkins.install.runSetupWizard=false", "-DJENKINS_HOME=/var/jenkins_home", "-jar", "/usr/share/jenkins/jenkins.war"]
-
