@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!-- Forzar uso de la caché local de Maven -->
+  <offline>false</offline>
+
+  <!-- Configuración del repositorio local de Maven -->
+  <localRepository>/var/jenkins_home/.m2/repository</localRepository>
+
+  <!-- Configuración de Mirrors 
+  <mirrors>
+    <mirror>
+      <id>artifactory</id>
+      <mirrorOf>central, snapshots, plugins</mirrorOf>
+      <name>Artifactory Caser</name>
+      <url>http://artifactory.caser.local/artifactory/caser</url>
+    </mirror>
+  </mirrors> -->
+
+  <mirrors>
+    <mirror>
+      <mirrorOf>milestones</mirrorOf>
+      <name>artifactory milestones</name>
+      <url>http://artifactory.caser.local/artifactory/milestones</url>
+      <id>artifactory-milestones</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>*,!milestones</mirrorOf>
+      <name>ARTIFACTORY</name>
+      <url>http://artifactory.caser.local/artifactory/caser</url>
+      <id>ARTIFACTORY</id>
+    </mirror>
+  </mirrors>
+
+  <profiles>
+    <profile>
+      <id>artifactory-repos</id>
+      <repositories>
+        <repository>
+          <id>artifactory-releases</id>
+          <name>Artifactory Releases</name>
+          <url>http://artifactory.caser.local/artifactory/caser</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>artifactory-plugins</id>
+          <name>Artifactory Plugin Repository</name>
+          <url>http://artifactory.caser.local/artifactory/caser</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+	    <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>artifactory-repos</activeProfile>
+  </activeProfiles>
+
+  <!-- Credenciales para Artifactory -->
+  <servers>
+    <server>
+      <id>${repositoryId}</id>
+      <username>JENKINS_CI</username>
+      <password>Gemquinx_01</password>
+    </server>
+  </servers>
+  <proxies>
+	  
+    <!-- Proxy para HTTP -->
+    <proxy>
+      <id>corporate-proxy-http</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>salida_internet2.caser.local</host>
+      <port>3128</port>
+      <nonProxyHosts>localhost|127.0.0.1|*.caser.local|artifactory.caser.local</nonProxyHosts>
+    </proxy>
+
+    <!-- Proxy para HTTPS -->
+    <proxy>
+      <id>corporate-proxy-https</id>
+      <active>true</active>
+      <protocol>https</protocol>
+      <host>salida_internet2.caser.local</host>
+      <port>3128</port>
+      <nonProxyHosts>localhost|127.0.0.1|*.caser.local|artifactory.caser.local</nonProxyHosts>
+    </proxy>
+  </proxies>
+
+</settings>
