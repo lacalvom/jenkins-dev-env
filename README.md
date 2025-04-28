@@ -178,6 +178,51 @@ pass:  P4ssw0rd
 node_modules/
 *.log
 dist/
+
+# — Maven —
+/target/
+/pom.xml.tag
+/pom.xml.releaseBackup
+/pom.xml.versionsBackup
+/pom.xml.next
+/release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# — Gradle —
+/.gradle/
+/build/
+/!gradle-wrapper.jar
+!gradlew
+!gradlew.bat
+
+# — IDEs comunes —
+# IntelliJ IDEA
+/.idea/
+/*.iml
+/out/
+
+# Eclipse
+/.classpath
+/.project
+/.settings/
+/bin/
+
+# VS Code
+.vscode/
+
+# Arquivos de registro y cobertura de tests
+*.log
+*.tmp
+jacoco.exec
+coverage/
+
+# Artefactos empaquetados
+*.jar
+*.war
+*.ear
+
 ```
 
 ---
